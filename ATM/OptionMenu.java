@@ -1,15 +1,14 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class OptionMenu {
 	Scanner menuInput = new Scanner(System.in);
 	DecimalFormat moneyFormat = new DecimalFormat("'$'###,##0.00");
-	HashMap<Integer, Account> data = new HashMap<Integer, Account>();
+	HashMap<Integer, ArrayList<Account>> data = new HashMap<>();
 
 	public void getLogin() throws IOException {
 		boolean end = false;
@@ -47,7 +46,8 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checking Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println(" Type 3 - Exit");
+				System.out.println(" Type 3 - Show all balances");
+				System.out.println(" Type 4 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -60,6 +60,10 @@ public class OptionMenu {
 					getSaving(acc);
 					break;
 				case 3:
+					System.out.println("\nChecking Account Balance: " + moneyFormat.format(acc.getCheckingBalance()));
+					System.out.println("\nSavings Account Balance: " + moneyFormat.format(acc.getSavingBalance()));
+					break;
+				case 4:
 					end = true;
 					break;
 				default:
@@ -152,16 +156,16 @@ public class OptionMenu {
 	}
 
 	public void createAccount() throws IOException {
-		int cst_no = 0;
+		int customerNumber = 0;
 		boolean end = false;
 		while (!end) {
 			try {
 				System.out.println("\nEnter your customer number ");
-				cst_no = menuInput.nextInt();
+				customerNumber = menuInput.nextInt();
 				Iterator it = data.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry pair = (Map.Entry) it.next();
-					if (!data.containsKey(cst_no)) {
+					if (!data.containsKey(customerNumber)) {
 						end = true;
 					}
 				}
@@ -175,8 +179,15 @@ public class OptionMenu {
 		}
 		System.out.println("\nEnter PIN to be registered");
 		int pin = menuInput.nextInt();
-		data.put(cst_no, new Account(cst_no, pin));
+		data.put(customerNumber, new Account(customerNumber, pin));
 		System.out.println("\nYour new account has been successfuly registered!");
+
+//		try (FileWriter writer = new FileWriter("accounts.txt")) {
+//			String accountInfo = String.valueOf(data);
+//
+//		} catch (){
+//
+//		}
 		System.out.println("\nRedirecting to login.............");
 		getLogin();
 	}
